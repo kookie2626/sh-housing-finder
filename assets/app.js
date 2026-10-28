@@ -16,7 +16,7 @@ function filtered(){const raw=state.q.trim(),parts=raw.split(/\s+/).map(norm).fi
  if(state.supply&&(state.supply==='unknown'?!!r.type:!r.type.includes(state.supply)))return false;
  const text=norm([r.name,r.shName,r.address,r.code,r.type].join(' '));return !raw||text.includes(whole)||parts.every(p=>text.includes(p));
  }).sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name,'ko'):state.sort==='new'?b.code-a.code:a.code-b.code)}
-function render(){current=filtered();$('#count').innerHTML=`${({all:'수록목록 전체',hidden:'이름 누락',review:'확인 필요',saved:'관심 목록'})[state.mode]} <span class="nowrap">${current.length}건</span>`;$('#clearq').hidden=!state.q;
+function render(){current=filtered();$('#count').innerHTML=`${({all:'전체',hidden:'이름 누락',review:'확인 필요',saved:'관심 목록'})[state.mode]} <span class="nowrap">${current.length}건</span>`;$('#clearq').hidden=!state.q;
  $$('.tab').forEach(b=>b.setAttribute('aria-pressed',String(state.mode===b.dataset.mode)));
  $('#savednum').textContent=saved.size;$('#tablebox').hidden=!current.length;$('#tablebody').innerHTML=current.map(tableRow).join('');
  $('#empty').hidden=!!current.length;$('#emptytitle').textContent=state.mode==='saved'&&!saved.size?'아직 관심 단지가 없습니다':'일치하는 단지가 없습니다';$('#emptytext').textContent=state.mode==='saved'&&!saved.size?'표의 별표를 눌러 관심 목록에 모아두세요.':'검색어를 짧게 입력하거나 필터를 줄여보세요.';
