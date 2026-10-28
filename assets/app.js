@@ -4,7 +4,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const norm=s=>String(s??'').normalize('NFKC').toLowerCase().replace(/[\s·_()\-]/g,'');
 const isReview=r=>r.status.includes('확인 필요')||r.status==='공급정보 미완';
 let saved=new Set();try{const x=JSON.parse(localStorage.getItem('sh-finder-saved-v2')||'[]');if(Array.isArray(x))saved=new Set(x.map(Number));}catch{}
-let state={mode:'all',q:'',district:'',supply:'',sort:'code'},current=[],toastTimer;
+let state={mode:'all',q:'',district:'',supply:'',sort:'name'},current=[],toastTimer;
 function notify(t){$('#toast').textContent=t;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,2200)}
 function badge(r){return `<span class="badge ${r.status.includes('필요')?'warn':r.status==='공급정보 미완'?'gray':r.hidden?'missing':''}">${esc(r.status)}</span>`}
 function field(v,fallback='미수집'){return esc(v||fallback)}
@@ -23,7 +23,7 @@ function render(){current=filtered();$('#count').innerHTML=`${({all:'전체',hid
  $('#export').disabled=!current.length;
  const chips=[state.mode!=='all'&&['목록',({hidden:'이름 누락만',review:'확인 필요만',saved:'관심 목록만'})[state.mode]],state.q&&['검색',state.q],state.district&&['지역',state.district],state.supply&&['유형',state.supply==='unknown'?'미등록':state.supply]].filter(Boolean);$('#activefilters').hidden=!chips.length;$('#activefilters').innerHTML=chips.map(([k,v])=>`<span class="chip">${k} · ${esc(v)}</span>`).join('')+'<button class="reset" id="reset">조건 초기화</button>';if($('#reset'))$('#reset').onclick=reset;
 }
-function update(){render()}function reset(){state.mode='all';state.q='';state.district='';state.supply='';state.sort='code';$('#q').value='';$('#district').value='';$('#supply').value='';$('#sort').value='code';update()}
+function update(){render()}function reset(){state.mode='all';state.q='';state.district='';state.supply='';state.sort='name';$('#q').value='';$('#district').value='';$('#supply').value='';$('#sort').value='name';update()}
 $('#allnum').textContent=DATA.rows.length;$('#hiddennum').textContent=DATA.rows.filter(r=>r.hidden).length;$('#reviewnum').textContent=DATA.rows.filter(isReview).length;
 for(const d of [...new Set(DATA.rows.map(r=>r.district).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'))){const o=document.createElement('option');o.value=d;o.textContent=d;$('#district').append(o)}
 $('#q').addEventListener('input',e=>{state.q=e.target.value;update()});$('#clearq').onclick=()=>{state.q='';$('#q').value='';update();$('#q').focus()};['district','supply','sort'].forEach(k=>$('#'+k).addEventListener('change',e=>{state[k]=e.target.value;update()}));$$('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;update()});$$('[data-query]').forEach(b=>b.onclick=()=>{state.q=b.dataset.query;$('#q').value=state.q;update()});$('#resetempty').onclick=()=>{state.mode='all';reset()};
